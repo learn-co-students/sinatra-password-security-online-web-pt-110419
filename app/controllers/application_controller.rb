@@ -18,6 +18,13 @@ class ApplicationController < Sinatra::Base
 
 	post "/signup" do
 		#your code here!
+		user = User.new(username: params[:username], password: params[:password])  #Note that even though our database has a column called password_digest, we still access the attribute of password. This is given to us by has_secure_password. 
+		
+		if user.save
+			redirect '/login'
+		else
+			redirect '/failure'
+		end
 	end
 
 	get "/login" do
@@ -26,6 +33,14 @@ class ApplicationController < Sinatra::Base
 
 	post "/login" do
 		#your code here!
+		user = User.find_by(:username => params[:username])
+		if user && user.authenticate(params[:password])
+    		session[:id] = user.id
+    		redirect "/success"
+  		else
+    		redirect "/failure"
+  	end
+
 	end
 
 	get "/success" do
